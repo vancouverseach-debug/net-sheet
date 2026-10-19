@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seller Net Sheet</title>
+<meta name="description" content="See what you'd walk away with if you sold your home in Greater Vancouver: commission, GST, mortgage payout and legal fees in one estimate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a seller's ledger. Inputs on the left, the estimated net sheet as a printed statement on the right; one column on phones. */
+:root{
+  --paper:#f2f3ef; --sheet:#fcfcfa; --ink:#1b1f1d; --ink-2:#565c58; --line:#d8dbd4; --rule:#1b1f1d;
+  --gold:#86662e; --gold-soft:#efe6d2; --cost:#a14a3a; --debt:#46658c; --fees:#8b7650; --keep:#2c6a4c; --keep-soft:#e3efe7;
+  --field:#ffffff; --focus:#86662e;
+  --display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'DM Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0d0d0c; --sheet:#151513; --ink:#ebe6da; --ink-2:#a39b90; --line:#2c2b26; --rule:#ebe6da;
+  --gold:#c9a96e; --gold-soft:#2a2418; --cost:#d4806e; --debt:#86a4cc; --fees:#bba77e; --keep:#5fc391; --keep-soft:#15261d;
+  --field:#1c1c19; --focus:#c9a96e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d0d0c; --sheet:#151513; --ink:#ebe6da; --ink-2:#a39b90; --line:#2c2b26; --rule:#ebe6da;
+  --gold:#c9a96e; --gold-soft:#2a2418; --cost:#d4806e; --debt:#86a4cc; --fees:#bba77e; --keep:#5fc391; --keep-soft:#15261d;
+  --field:#1c1c19; --focus:#c9a96e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1060px;margin:0 auto}
+a{color:var(--gold)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+header{padding-block:40px 28px;display:grid;gap:14px}
+.brand{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;flex-wrap:wrap;gap:6px 14px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(40px,7vw,68px);line-height:1;margin:0;letter-spacing:-.01em;text-wrap:balance;max-width:14ch}
+.lede{color:var(--ink-2);max-width:56ch;margin:0;font-size:17px}
+
+.tool{display:grid;gap:24px;align-items:start;padding-bottom:40px}
+@media (min-width:900px){.tool{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:40px}.sheet{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}}
+
+.inputs{display:grid;gap:18px;min-width:0}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.example{font-size:13px;color:var(--ink-2);background:var(--gold-soft);border-radius:6px;padding:8px 12px}
+.field{display:grid;gap:6px}
+.field label,.lbl{font-weight:500;font-size:15px}
+.hint{font-size:13px;color:var(--ink-2)}
+.quick{font-size:15px;font-weight:500;color:var(--keep);text-decoration:none}
+.quick b{font-family:var(--mono);font-weight:500}
+@media (min-width:900px){.quick{display:none}}
+.money{position:relative}
+.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-2);font-family:var(--mono);pointer-events:none}
+input,select{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:12px 14px;width:100%;min-width:0}
+.money input{padding-left:30px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+input:focus,select:focus{border-color:var(--focus);outline:none;box-shadow:0 0 0 3px var(--gold-soft)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+details{border-top:1px solid var(--line);padding-top:14px}
+summary{cursor:pointer;font-weight:500;color:var(--gold)}
+details .pair{margin-top:12px}
+.pct{position:relative}.pct input{padding-right:34px;font-family:var(--mono)}.pct span{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--ink-2)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.check input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--gold)}
+
+/* the statement */
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:26px 24px 22px;min-width:0;box-shadow:0 1px 0 var(--line),0 18px 40px -28px rgba(0,0,0,.35)}
+.sheet-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--rule);padding-bottom:10px}
+.sheet-head h2{font-family:var(--display);font-size:28px;font-weight:600;margin:0;line-height:1.1}
+.sheet-head time{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.rows{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:baseline;gap:8px;padding:11px 0;border-bottom:1px dotted var(--line)}
+.row .name{min-width:0}
+.row small{display:block;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.row .lead{flex:1;border-bottom:1px dotted var(--line);transform:translateY(-4px);min-width:12px}
+.row .amt{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.row.less .amt{color:var(--cost)}
+.row.zero{color:var(--ink-2)}.row.zero .amt{color:var(--ink-2)}
+.sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);padding:14px 0 2px}
+.net{border-top:2px solid var(--rule);margin-top:10px;padding-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.net .k{font-weight:600}
+.net .v{font-family:var(--display);font-weight:600;font-size:clamp(40px,6vw,54px);line-height:1;color:var(--keep);font-variant-numeric:lining-nums tabular-nums}
+.net.neg .v{color:var(--cost)}
+.bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--line);margin-top:18px}
+.bar i{display:block;height:100%;transition:width .35s ease}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px;color:var(--ink-2)}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.note{font-size:13px;color:var(--ink-2);margin:16px 0 0}
+.flag{font-size:14px;background:var(--gold-soft);border-radius:6px;padding:10px 12px;margin-top:14px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+
+/* lead form */
+.ask{border-top:1px solid var(--line);padding-block:40px;display:grid;gap:24px}
+@media (min-width:900px){.ask{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:40px}}
+.ask h2{font-family:var(--display);font-weight:600;font-size:clamp(32px,5vw,44px);line-height:1.05;margin:0 0 12px;text-wrap:balance}
+.ask p{color:var(--ink-2);margin:0 0 10px;max-width:46ch}
+form{display:grid;gap:16px;min-width:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:15px 20px;background:var(--ink);color:var(--paper);cursor:pointer}
+button:hover{opacity:.9}
+button:disabled{opacity:.55;cursor:default}
+.privacy{font-size:13px;color:var(--ink-2);margin:0}
+.err{color:var(--cost);font-size:14px;min-height:1px;margin:0}
+.done{background:var(--keep-soft);border-radius:8px;padding:22px}
+.done h3{font-family:var(--display);font-size:30px;margin:0 0 6px}
+.done p{margin:0;color:var(--ink)}
+
+footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13px;color:var(--ink-2);display:grid;gap:8px}
+footer .who{color:var(--ink);font-weight:500}
+.copy{font:inherit;font-size:13px;font-weight:500;background:none;color:var(--gold);padding:0 0 0 8px;border:0;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><span>Chris Zenone</span><span>Oakwyn Realty</span><span>Greater Vancouver</span></div>
+    <h1>What would you walk away with if you sold?</h1>
+    <p class="lede">Type a sale price and see your estimated take-home after commission, GST, your mortgage and legal fees. It takes about a minute.</p>
+  </header>
+
+  <section class="tool" aria-label="Net sheet calculator">
+    <div class="inputs">
+      <p class="example" id="example">These are example numbers. Type your own.</p>
+
+      <div class="field">
+        <label for="price">Expected sale price</label>
+        <div class="money"><span>$</span><input id="price" inputmode="numeric" autocomplete="off" value="1,250,000"></div>
+        <span class="hint">Not sure what your home would sell for? Ask me below for a free estimate.</span>
+        <a class="quick" href="#sheet" id="quick"></a>
+      </div>
+
+      <div class="field">
+        <label for="mortgage">Mortgage left to pay off</label>
+        <div class="money"><span>$</span><input id="mortgage" inputmode="numeric" autocomplete="off" value="480,000"></div>
+        <span class="hint">Your latest mortgage statement shows this.</span>
+      </div>
+
+      <div class="field">
+        <label for="penalty">Mortgage prepayment penalty</label>
+        <div class="money"><span>$</span><input id="penalty" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+        <span class="hint">Only if you break your mortgage early. Your lender can quote it.</span>
+      </div>
+
+      <div class="pair">
+        <div class="field">
+          <label for="legal">Lawyer or notary</label>
+          <div class="money"><span>$</span><input id="legal" inputmode="numeric" autocomplete="off" value="1,800"></div>
+        </div>
+        <div class="field">
+          <label for="other">Other costs</label>
+          <div class="money"><span>$</span><input id="other" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+        </div>
+      </div>
+      <span class="hint" style="margin-top:-10px">Other costs could be moving, staging or strata documents.</span>
+
+      <label class="check" for="recent"><input type="checkbox" id="recent"> <span>I've owned this home for less than two years</span></label>
+
+      <details>
+        <summary>Change the commission rates</summary>
+        <div class="pair">
+          <div class="field"><label for="r1">On the first $100,000</label><div class="pct"><input id="r1" inputmode="decimal" value="7"><span>%</span></div></div>
+          <div class="field"><label for="r2">On the balance</label><div class="pct"><input id="r2" inputmode="decimal" value="2.5"><span>%</span></div></div>
+        </div>
+      </details>
+    </div>
+
+    <article class="sheet" id="sheet" aria-live="polite">
+      <div class="sheet-head"><h2>Estimated net sheet</h2><time id="today"></time></div>
+      <ul class="rows" id="rows"></ul>
+      <div class="net" id="netbox"><span class="k">Estimated cash to you</span><span class="v" id="net">$0</span></div>
+      <div class="bar" id="bar" aria-hidden="true"></div>
+      <div class="legend" id="legend"></div>
+      <p class="flag" id="flag" hidden>BC's home flipping tax may apply when a home is sold within two years of buying it. Some sales are exempt. Ask me or your accountant before you list.</p>
+      <p class="note">Not included: property tax and strata fee adjustments on completion day, and capital gains tax if this isn't your principal residence. This is an estimate, not an appraisal or legal advice. Your lawyer or notary prepares the final statement of adjustments.</p>
+    </article>
+  </section>
+
+  <section class="ask" id="ask">
+    <div>
+      <h2>Want a real number?</h2>
+      <p>This estimate uses the price you typed. I'll look at what's sold near you recently and send you a proper value for your home. It's free, and there's no obligation to list.</p>
+      <p>Your current estimate goes along with your note, so we start from the same numbers.</p>
+    </div>
+    <div id="formwrap">
+      <form id="form" novalidate>
+        <div class="field"><label for="name">Your name</label><input id="name" autocomplete="name" required></div>
+        <div class="pair">
+          <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
+          <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel"></div>
+        </div>
+        <span class="hint" style="margin-top:-8px">Email or phone, whichever you prefer.</span>
+        <div class="field"><label for="address">Property address</label><input id="address" autocomplete="street-address" placeholder="Street address"></div>
+        <div class="pair">
+          <div class="field"><label for="area">Area</label><select id="area"><option value="">Choose one</option></select></div>
+          <div class="field"><label for="timeline">Thinking of selling</label>
+            <select id="timeline">
+              <option value="">Choose one</option>
+              <option value="ASAP">As soon as possible</option>
+              <option value="1-3 months">In 1 to 3 months</option>
+              <option value="3-6 months">In 3 to 6 months</option>
+              <option value="6-12 months">In 6 to 12 months</option>
+              <option value="Just browsing">Just curious for now</option>
+            </select>
+          </div>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="company">Company</label><input id="company" tabindex="-1" autocomplete="off"></div>
+        <p class="err" id="err" role="alert"></p>
+        <button id="send" type="submit">Send me a real number</button>
+        <p class="privacy">Your details go only to Chris Zenone at Oakwyn Realty, to follow up about your home.</p>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <span class="who">Chris Zenone · Oakwyn Realty</span>
+    <span>Email <a id="mail" href="mailto:chriszenone@outlook.com">chriszenone@outlook.com</a><button class="copy" type="button" id="copy">Copy</button></span>
+    <span>Estimates on this page are for planning only. Commission is negotiable and the rates above are a common structure, not a quote.</span>
+  </footer>
+</div>
+
+<script>
+const CFG = { mode: 'live', url: 'https://ffudeimvudfcdgqmpgrr.supabase.co', key: 'sb_publishable_bWXLJES2-7sbm3cYXa5XKg_kwZ15dfh' };
+const AREAS = {
+  'Greater Vancouver': ['Vancouver East','Vancouver West','Burnaby East','Burnaby North','Burnaby South','New Westminster','Coquitlam','Port Coquitlam','Port Moody','Pitt Meadows','Maple Ridge','North Vancouver','West Vancouver','Richmond','Ladner','Tsawwassen','Bowen Island','Squamish','Whistler','Sunshine Coast'],
+  'Fraser Valley': ['North Delta','North Surrey','Surrey Central','Cloverdale','South Surrey & White Rock','Langley','Abbotsford','Mission']
+};
+const $ = id => document.getElementById(id);
+const num = v => { const n = parseFloat(String(v || '').replace(/[^0-9.]/g, '')); return isFinite(n) ? n : 0; };
+const money = n => (n < 0 ? '−' : '') + '$' + Math.round(Math.abs(n)).toLocaleString('en-CA');
+
+/* Same formula as the Seller Net Sheet in Realtor OS: tiered commission, GST on commission, then payouts and fees. */
+function netSheet({ price, mortgage = 0, penalty = 0, legal = 0, other = 0, r1 = 7, r2 = 2.5 }) {
+  const commission = Math.min(price, 100000) * r1 / 100 + Math.max(price - 100000, 0) * r2 / 100;
+  const gst = commission * 0.05;
+  const net = price - commission - gst - mortgage - penalty - legal - other;
+  return { price, commission, gst, mortgage, penalty, legal, other, net };
+}
+
+function read() {
+  return { price: num($('price').value), mortgage: num($('mortgage').value), penalty: num($('penalty').value),
+           legal: num($('legal').value), other: num($('other').value),
+           r1: $('r1').value === '' ? 7 : num($('r1').value), r2: $('r2').value === '' ? 2.5 : num($('r2').value) };
+}
+
+function render() {
+  const inp = read(), s = netSheet(inp);
+  const pct = n => (n % 1 ? n.toFixed(2).replace(/0$/, '') : n) + '%';
+  const row = (name, val, sub, less) => `<li class="row${less ? ' less' : ''}${less && !val ? ' zero' : ''}">
+      <span class="name">${name}${sub ? `<small>${sub}</small>` : ''}</span><span class="lead"></span>
+      <span class="amt">${less && val ? '− ' : ''}${money(val)}</span></li>`;
+  $('rows').innerHTML =
+    row('Sale price', s.price) +
+    '<li class="sub">Less</li>' +
+    row('Real estate commission', s.commission, `${pct(inp.r1)} on the first $100,000, ${pct(inp.r2)} on the balance`, true) +
+    row('GST on commission', s.gst, '5%', true) +
+    row('Mortgage payout', s.mortgage, '', true) +
+    row('Prepayment penalty', s.penalty, '', true) +
+    row('Lawyer or notary', s.legal, '', true) +
+    row('Other costs', s.other, '', true);
+  $('net').textContent = money(s.net);
+  $('quick').innerHTML = s.price ? `About <b>${money(s.net)}</b> to you · see the breakdown ↓` : '';
+  $('netbox').classList.toggle('neg', s.net < 0);
+
+  const total = Math.max(s.price, 1);
+  const parts = [
+    ['Commission and GST', s.commission + s.gst, 'var(--cost)'],
+    ['Mortgage and penalty', s.mortgage + s.penalty, 'var(--debt)'],
+    ['Legal and other', s.legal + s.other, 'var(--fees)'],
+    ['You keep', Math.max(s.net, 0), 'var(--keep)']
+  ].filter(p => p[1] > 0);
+  $('bar').innerHTML = s.price ? parts.map(p => `<i style="width:${Math.min(100, p[1] / total * 100)}%;background:${p[2]}"></i>`).join('') : '';
+  $('legend').innerHTML = s.price ? parts.map(p => `<span><b style="background:${p[2]}"></b>${p[0]} ${p[1] / total < .005 ? '<1' : Math.round(p[1] / total * 100)}%</span>`).join('') : '';
+  $('flag').hidden = !$('recent').checked;
+  return s;
+}
+
+/* money fields: parse while typing, add commas when you leave the field */
+['price','mortgage','penalty','legal','other'].forEach(id => {
+  const el = $(id);
+  el.addEventListener('input', () => { $('example').hidden = true; render(); });
+  el.addEventListener('blur', () => { const n = num(el.value); el.value = n ? Math.round(n).toLocaleString('en-CA') : ''; });
+});
+['r1','r2','recent'].forEach(id => $(id).addEventListener('input', render));
+
+$('today').textContent = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+$('area').insertAdjacentHTML('beforeend', Object.entries(AREAS).map(([g, list]) =>
+  `<optgroup label="${g}">${list.map(a => `<option>${a.replace(/&/g, '&amp;')}</option>`).join('')}</optgroup>`).join(''));
+render();
+
+$('copy').addEventListener('click', async () => {
+  const b = $('copy');
+  try { await navigator.clipboard.writeText('chriszenone@outlook.com'); b.textContent = 'Copied'; }
+  catch { const r = document.createRange(); r.selectNodeContents($('mail')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Selected'; }
+  setTimeout(() => b.textContent = 'Copy', 1800);
+});
+
+$('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const v = id => $(id).value.trim();
+  const name = v('name'), email = v('email'), phone = v('phone');
+  const err = $('err'); err.textContent = '';
+  if (!name) { err.textContent = 'Add your name so I know who to reply to.'; $('name').focus(); return; }
+  if (!email && !phone) { err.textContent = 'Add an email or a phone number so I can send your estimate.'; $('email').focus(); return; }
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = 'That email address looks incomplete. Check it and try again.'; $('email').focus(); return; }
+  const first = name.split(/\s+/)[0];
+  if (v('company')) return showDone(first); // a bot filled the hidden field
+
+  const s = render(), inp = read(), r = n => Math.round(n);
+  const body = {
+    source: 'net-sheet', name: name.slice(0, 80), email: email ? email.slice(0, 120) : null, phone: phone ? phone.slice(0, 30) : null,
+    address: v('address').slice(0, 160) || null, area: v('area') || null, timeline: v('timeline') || null,
+    estimate: { price: r(s.price), mortgage: r(s.mortgage), penalty: r(s.penalty), legal: r(s.legal), other: r(s.other),
+                commission: r(s.commission), gst: r(s.gst), net: r(s.net), rates: [inp.r1, inp.r2], owner2yrs: $('recent').checked }
+  };
+  const btn = $('send'); btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    if (CFG.mode === 'preview') { showDone(first, true); return; }
+    const res = await fetch(CFG.url + '/rest/v1/ros_inbox', {
+      method: 'POST',
+      headers: { apikey: CFG.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    showDone(first);
+  } catch (x) {
+    console.error(x);
+    err.textContent = "That didn't go through. Try again in a minute, or email me at chriszenone@outlook.com.";
+    btn.disabled = false; btn.textContent = 'Send me a real number';
+  }
+});
+
+function showDone(first, preview) {
+  $('formwrap').innerHTML = `<div class="done" role="status"><h3>Thanks, ${first.replace(/[<>&"]/g, '')}.</h3>
+    <p>I've got your numbers and I'll be in touch soon with a real estimate for your home.${preview ? ' <em>(Preview only: nothing was sent from this page.)</em>' : ''}</p></div>`;
+}
+</script>
+
+</body>
+</html>
